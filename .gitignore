@@ -1,0 +1,8 @@
+pi-gen/
+work/
+deploy/
+*.img
+*.img.xz
+*.img.gz
+*.zip
+.DS_Store

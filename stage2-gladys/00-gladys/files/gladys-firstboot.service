@@ -1,0 +1,15 @@
+[Unit]
+Description=Gladys Assistant first boot setup
+Documentation=https://gladysassistant.com/docs/installation/docker/
+After=docker.service network-online.target
+Wants=network-online.target
+ConditionPathExists=!/var/lib/gladysassistant/.firstboot-complete
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/gladys-firstboot
+TimeoutStartSec=1800
+
+[Install]
+WantedBy=multi-user.target

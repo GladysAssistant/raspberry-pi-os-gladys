@@ -1,0 +1,85 @@
+name: Build Gladys Raspberry Pi image
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Every Monday at 03:00 UTC
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-image-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build image with pi-gen
+        id: pigen
+        uses: usimd/pi-gen-action@v1
+        with:
+          image-name: gladys-assistant
+          pi-gen-repository: RPi-Distro/pi-gen
+          pi-gen-version: arm64
+          release: trixie
+          stage-list: stage0 stage1 stage2 ./stage2-gladys
+          hostname: gladys
+          timezone: UTC
+          locale: en_GB.UTF-8
+          username: pi
+          password: raspberry
+          disable-first-boot-user-rename: "1"
+          enable-ssh: "1"
+          enable-cloud-init: "1"
+          compression: xz
+          compression-level: "6"
+          export-last-stage-only: true
+          increase-runner-disk-size: true
+          pi-gen-release: Gladys Assistant
+          verbose-output: true
+
+      - name: Compute SHA256 checksum
+        run: |
+          IMAGE="${{ steps.pigen.outputs.image-path }}"
+          sha256sum "$IMAGE" | tee "${IMAGE}.sha256"
+          echo "image=$IMAGE" >> "$GITHUB_ENV"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gladys-assistant-raspios-lite-arm64
+          path: |
+            ${{ steps.pigen.outputs.image-path }}
+            ${{ steps.pigen.outputs.image-path }}.sha256
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: image-${{ github.run_number }}
+          name: Gladys Assistant Raspberry Pi OS (build ${{ github.run_number }})
+          body: |
+            Raspberry Pi OS Lite 64-bit (Trixie) with Gladys Assistant pre-configured.
+
+            - Hostname: `gladys`
+            - User: `pi` / password: `raspberry`
+            - SSH: enabled
+            - Gladys and Watchtower start on first boot (latest `v4` images pulled from Docker Hub)
+
+            Flash with [Raspberry Pi Imager](https://www.raspberrypi.com/software/) or `dd`, then wait a few minutes after first boot for Gladys to download and start.
+          files: |
+            ${{ steps.pigen.outputs.image-path }}
+            ${{ steps.pigen.outputs.image-path }}.sha256
+          generate_release_notes: false
+          make_latest: true
