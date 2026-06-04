@@ -23,6 +23,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # pi-gen-action's increase-runner-disk-size fails when optional packages
+      # (e.g. google-cloud-cli-anthoscli) are not installed on the runner.
+      - name: Free disk space on runner
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
+
       - name: Build image with pi-gen
         id: pigen
         uses: usimd/pi-gen-action@v1
@@ -43,7 +55,7 @@ jobs:
           compression: xz
           compression-level: "6"
           export-last-stage-only: true
-          increase-runner-disk-size: true
+          increase-runner-disk-size: false
           pi-gen-release: Gladys Assistant
           verbose-output: true
 
