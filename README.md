@@ -2,7 +2,7 @@
 
 Automated build of a **Raspberry Pi OS Lite 64-bit** image with [Gladys Assistant](https://gladysassistant.com/) and [Watchtower](https://github.com/nickfedor/watchtower).
 
-Images are built on GitHub Actions with [pi-gen](https://github.com/RPi-Distro/pi-gen) and [pi-gen-action](https://github.com/usimd/pi-gen-action).
+Images are built on GitHub Actions with [pi-gen](https://github.com/RPi-Distro/pi-gen) and [pi-gen-action](https://github.com/usimd/pi-gen-action), on an **`ubuntu-24.04-arm`** runner (native aarch64 build, required for Raspberry Pi OS arm64 images).
 
 ## What is included
 
