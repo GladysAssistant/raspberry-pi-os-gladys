@@ -33,7 +33,7 @@ jobs:
           release: trixie
           stage-list: stage0 stage1 stage2 ./stage2-gladys
           hostname: gladys
-          timezone: UTC
+          timezone: Etc/UTC
           locale: en_GB.UTF-8
           username: pi
           password: raspberry
