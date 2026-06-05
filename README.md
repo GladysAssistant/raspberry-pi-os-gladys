@@ -14,10 +14,11 @@ Images are built on GitHub Actions with [pi-gen](https://github.com/RPi-Distro/p
 | SSH | Enabled |
 | Timezone (Gladys container) | UTC |
 | Docker | Pre-installed |
+| Setup page | Shown on **first boot** while Gladys downloads (`gladysassistant/gladys-setup-in-progress`) |
 | Gladys | Started on **first boot** (`gladysassistant/gladys:v4`) |
 | Watchtower | Started on **first boot** (auto-updates Gladys) |
 
-Gladys and Watchtower are **not** baked into the image. On first boot, the system pulls the latest images from Docker Hub so each flash gets up-to-date containers.
+Docker images are **not** baked into the disk image. On first boot, a lightweight setup page (~25 MB) is pulled and displayed on port 80, then Gladys and Watchtower are downloaded from Docker Hub.
 
 ## Flash the image
 
@@ -30,8 +31,8 @@ Gladys and Watchtower are **not** baked into the image. On first boot, the syste
    ```
 
 3. Boot the Pi on your LAN (Ethernet or Wi‑Fi configured as usual on Raspberry Pi OS).
-4. Wait a few minutes on first boot while Docker pulls images and starts Gladys.
-5. Open `http://<pi-ip-address>/` in a browser on the same network.
+4. Open `http://<pi-ip-address>/` in a browser: a setup page appears within seconds while Gladys downloads in the background.
+5. After a few minutes, Gladys replaces the setup page automatically on the same URL.
 
 Verify first-boot progress:
 

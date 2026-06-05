@@ -3,20 +3,45 @@
 set -euo pipefail
 
 FLAG="/var/lib/gladysassistant/.firstboot-complete"
+SETUP_IMAGE="gladysassistant/gladys-setup-in-progress:latest"
+GLADYS_IMAGE="gladysassistant/gladys:v4"
+WATCHTOWER_IMAGE="nickfedor/watchtower:latest"
+SETUP_CONTAINER="gladys-setup-in-progress"
+
 mkdir -p /var/lib/gladysassistant
 
 if [ -f "${FLAG}" ]; then
 	exit 0
 fi
 
+stop_setup_container() {
+	docker rm -f "${SETUP_CONTAINER}" 2>/dev/null || true
+}
+
+start_setup_container() {
+	echo "Gladys first boot: starting setup page..."
+	docker rm -f "${SETUP_CONTAINER}" 2>/dev/null || true
+	docker run -d \
+		--name "${SETUP_CONTAINER}" \
+		--network=host \
+		"${SETUP_IMAGE}"
+}
+
 echo "Gladys first boot: waiting for Docker..."
 until docker info >/dev/null 2>&1; do
 	sleep 2
 done
 
-echo "Gladys first boot: pulling images..."
-docker pull gladysassistant/gladys:v4
-docker pull nickfedor/watchtower:latest
+echo "Gladys first boot: pulling setup page image..."
+docker pull "${SETUP_IMAGE}"
+start_setup_container
+
+echo "Gladys first boot: pulling Gladys image (setup page available on port 80)..."
+docker pull "${GLADYS_IMAGE}"
+
+echo "Gladys first boot: pulling Watchtower image..."
+docker pull "${WATCHTOWER_IMAGE}"
+stop_setup_container
 
 echo "Gladys first boot: starting Gladys..."
 docker rm -f gladys 2>/dev/null || true
@@ -36,7 +61,7 @@ docker run -d \
 	-v /var/lib/gladysassistant:/var/lib/gladysassistant \
 	-v /dev:/dev \
 	-v /run/udev:/run/udev:ro \
-	gladysassistant/gladys:v4
+	"${GLADYS_IMAGE}"
 
 echo "Gladys first boot: starting Watchtower..."
 docker rm -f watchtower 2>/dev/null || true
@@ -44,7 +69,7 @@ docker run -d \
 	--name watchtower \
 	--restart=always \
 	-v /var/run/docker.sock:/var/run/docker.sock \
-	nickfedor/watchtower:latest \
+	"${WATCHTOWER_IMAGE}" \
 	--cleanup --include-restarting
 
 touch "${FLAG}"

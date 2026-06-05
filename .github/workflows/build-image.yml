@@ -88,9 +88,10 @@ jobs:
             - Hostname: `gladys`
             - User: `pi` / password: `raspberry`
             - SSH: enabled
+            - A setup page is shown on first boot while Gladys downloads (`gladys-setup-in-progress`)
             - Gladys and Watchtower start on first boot (latest `v4` images pulled from Docker Hub)
 
-            Flash with [Raspberry Pi Imager](https://www.raspberrypi.com/software/) or `dd`, then wait a few minutes after first boot for Gladys to download and start.
+            Flash with [Raspberry Pi Imager](https://www.raspberrypi.com/software/) or `dd`, then open `http://<pi-ip>/` to follow setup progress.
           files: |
             ${{ steps.pigen.outputs.image-path }}
             ${{ steps.pigen.outputs.image-path }}.sha256
