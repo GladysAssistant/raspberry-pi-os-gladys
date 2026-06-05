@@ -20,13 +20,19 @@ Images are built on GitHub Actions with [pi-gen](https://github.com/RPi-Distro/p
 
 Docker images are **not** baked into the disk image. On first boot, a lightweight setup page (~25 MB) is pulled and displayed on port 80, then Gladys and Watchtower are downloaded from Docker Hub.
 
+## Raspberry Pi Imager manifest
+
+Each GitHub Release includes a `raspberry-pi-imager.json` file with the metadata required for a [custom OS list](https://www.raspberrypi.com/documentation/computers/os.html#rpi-imager-customisation) (`extract_size`, `extract_sha256`, `image_download_size`, `image_download_sha256`, `release_date`, `url`, etc.).
+
+The `url` field points to the release `.zip` on GitHub. If you mirror the image elsewhere (e.g. `https://gladysassistant.com/download/latest-64.zip`), update `url` before publishing your manifest.
+
 ## Flash the image
 
-1. Download the latest `.img.xz` from the repository **GitHub Releases** page.
-2. Flash with [Raspberry Pi Imager](https://www.raspberrypi.com/software/) or:
+1. Download the latest `.zip` from the repository **GitHub Releases** page (or use `raspberry-pi-imager.json` in Raspberry Pi Imager).
+2. Flash with [Raspberry Pi Imager](https://www.raspberrypi.com/software/) (select the `.zip` file directly), or:
 
    ```bash
-   xz -dk gladys-assistant-*.img.xz
+   unzip gladys-assistant-*.zip
    sudo dd if=gladys-assistant-*.img of=/dev/sdX bs=4M conv=fsync status=progress
    ```
 

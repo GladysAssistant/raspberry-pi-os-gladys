@@ -1,0 +1,13 @@
+{
+  "os_list": [
+    {
+      "name": "Gladys Assistant (64-bit, for Rpi 3, 4 & 5)",
+      "description": "A privacy-first, open-source home assistant that runs on the Raspberry Pi.",
+      "icon": "https://gladysassistant.com/img/external/raspberry-pi-imager/icon-raspberry-pi-imager-40x40.png",
+      "devices": ["pi3", "pi4", "pi5"],
+      "init_format": "systemd",
+      "architecture": "armv8",
+      "website": "https://gladysassistant.com"
+    }
+  ]
+}
