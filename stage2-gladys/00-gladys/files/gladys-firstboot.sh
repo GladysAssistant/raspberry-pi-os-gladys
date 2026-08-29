@@ -27,6 +27,18 @@ start_setup_container() {
 		"${SETUP_IMAGE}"
 }
 
+# The Pi has no RTC: on first boot the clock holds the image build date, and
+# TLS to the Docker registry fails until NTP steps it. Best-effort wait so a
+# blocked NTP port cannot hang first boot forever.
+echo "Gladys first boot: waiting for time synchronization..."
+for _ in $(seq 1 60); do
+	if [ "$(timedatectl show -p NTPSynchronized --value 2>/dev/null)" = "yes" ]; then
+		echo "Gladys first boot: clock synchronized ($(date -u))."
+		break
+	fi
+	sleep 2
+done
+
 echo "Gladys first boot: waiting for Docker..."
 until docker info >/dev/null 2>&1; do
 	sleep 2
