@@ -1,8 +1,8 @@
 [Unit]
 Description=Gladys Assistant first boot setup
 Documentation=https://gladysassistant.com/docs/installation/docker/
-After=docker.service network-online.target
-Wants=network-online.target
+After=docker.service network-online.target time-sync.target
+Wants=network-online.target time-sync.target
 ConditionPathExists=!/var/lib/gladysassistant/.firstboot-complete
 
 [Service]
